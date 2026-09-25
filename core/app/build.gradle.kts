@@ -18,8 +18,6 @@ plugins {
 
 apply { plugin(AndroidIDEAssetsPlugin::class.java) }
 
-// সমস্যা সৃষ্টিকারী খালি buildscript ব্লকটি সরিয়ে সরাসরি ক্লিন রাখা হলো
-
 tasks.configureEach {
     if (name.contains("desugar", ignoreCase = true)) {
         enabled = false
@@ -120,13 +118,10 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
   implementation("org.tukaani:xz:1.9")
   implementation("org.apache.commons:commons-compress:1.21")
-  implementation("com.github.Dimezis:BlurView:version-3.2.0")
   implementation("androidx.security:security-crypto:1.1.0-alpha06")
   implementation(projects.external.acsprovider)
   implementation(projects.external.atc) 
-  implementation(libs.external.customizable.cardview)
   implementation(projects.external.logwire)
-  implementation(libs.external.seasonal.effects)
   
   kapt(libs.common.glide.ap)
   kapt(libs.google.auto.service)
@@ -147,13 +142,6 @@ dependencies {
   implementation(libs.google.gson)
   implementation(libs.google.guava)
 
-  implementation("com.google.ai.client.generativeai:generativeai:0.9.0") {
-    exclude(group = "org.slf4j", module = "slf4j-api")
-    exclude(group = "org.slf4j", module = "slf4j-simple")
-    exclude(group = "org.slf4j", module = "slf4j-nop")
-  }
-  
-  implementation("com.github.MiyazKaori:SilentInstaller:1.0.0-alpha")
   implementation(libs.git.jgit)
 
   implementation(libs.androidx.splashscreen)
@@ -184,7 +172,6 @@ dependencies {
   implementation(files(rootProject.file("composite-builds/build-deps/libs/javapoet.jar")))
 
   implementation(projects.core.projectdata)
-  implementation(projects.ideconfigurations)
   implementation(projects.core.actions)
   implementation(projects.core.common)
   implementation(projects.core.indexingApi)
