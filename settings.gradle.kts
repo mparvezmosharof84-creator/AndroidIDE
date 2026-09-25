@@ -1,18 +1,6 @@
 /*
  *  This file is part of AndroidIDE.
- *
- *  AndroidIDE is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  AndroidIDE is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *  Official Composite Build Engine Fix by Parvez Mosharof
  */
 
 pluginManagement {
@@ -28,6 +16,38 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
+  val dependencySubstitutions = mapOf(
+    "build-deps" to arrayOf(
+      "appintro",
+      "fuzzysearch",
+      "google-java-format",
+      "java-compiler",
+      "javac",
+      "javapoet",
+      "jaxp",
+      "jdk-compiler",
+      "jdk-jdeps",
+      "jdt",
+      "layoutlib-api",
+      "logback-core"
+    ),
+    "build-deps-common" to arrayOf(
+      "desugaring-core"
+    )
+  )
+
+  for ((build, modules) in dependencySubstitutions) {
+    includeBuild("composite-builds/${build}") {
+      this.name = build
+      dependencySubstitution {
+        for (module in modules) {
+          substitute(module("com.itsaky.androidide.build:${module}"))
+            .using(project(":${module}"))
+        }
+      }
+    }
+  }
+
   repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
   repositories {
     google()
@@ -35,19 +55,6 @@ dependencyResolutionManagement {
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://jitpack.io")
-  }
-}
-
-includeBuild("composite-builds/build-deps") {
-  dependencySubstitution {
-    substitute(module("com.itsaky.androidide.build:appintro")).using(project(":appintro"))
-    substitute(module("com.itsaky.androidide.build:desugaring-core")).using(project(":desugaring-core"))
-    substitute(module("com.itsaky.androidide.build:google-java-format")).using(project(":google-java-format"))
-    substitute(module("com.itsaky.androidide.build:javac")).using(project(":javac"))
-    substitute(module("com.itsaky.androidide.build:javapoet")).using(project(":javapoet"))
-    substitute(module("com.itsaky.androidide.build:jaxp")).using(project(":jaxp"))
-    substitute(module("com.itsaky.androidide.build:layoutlib-api")).using(project(":layoutlib-api"))
-    substitute(module("com.itsaky.androidide.build:logback-core")).using(project(":logback-core"))
   }
 }
 
