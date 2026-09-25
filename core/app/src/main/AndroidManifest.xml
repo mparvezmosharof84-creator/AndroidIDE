@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
   android:installLocation="internalOnly"
@@ -19,10 +36,10 @@
   <uses-permission
     android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
     tools:ignore="ScopedStorage" />
+  <uses-permission android:name="android.permission.READ_LOGS" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
   <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
   <application
@@ -32,15 +49,24 @@
     android:extractNativeLibs="true"
     android:hardwareAccelerated="true"
     android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher"
     android:label="@string/app_name"
     android:largeHeap="true"
     android:name=".app.IDEApplication"
     android:preserveLegacyExternalStorage="true"
     android:requestLegacyExternalStorage="true"
-    android:resizeableActivity="false"
+    android:resizeableActivity="true"
     android:supportsRtl="true"
     android:theme="@style/Theme.AndroidIDE"
+    android:networkSecurityConfig="@xml/network_security_config"
     tools:ignore="DiscouragedApi,MediaCapabilities,UnusedAttribute">
+
+    <!-- আপনার নতুন স্বাধীন Google AI Studio App Builder স্ক্রিন -->
+    <activity
+      android:name="com.itsaky.androidide.ai.AIStudioActivity"
+      android:exported="true"
+      android:theme="@style/Theme.AndroidIDE" />
+
     <activity
       android:exported="true"
       android:name=".activities.CrashHandlerActivity"
@@ -60,23 +86,55 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+
     <activity
       android:exported="false"
       android:name=".activities.OnboardingActivity" />
+
     <activity
       android:exported="false"
       android:name=".activities.MainActivity"
       android:theme="@style/Theme.AndroidIDE" />
+
     <activity
       android:configChanges="orientation|screenSize"
       android:launchMode="singleTop"
-      android:name=".activities.editor.EditorActivityKt"/>
+      android:name=".activities.editor.EditorActivityKt" />
+
     <activity android:name=".activities.PreferencesActivity" />
     <activity android:name=".activities.AboutActivity" />
     <activity android:name=".activities.ContributorsActivity" />
+    <activity android:name=".activities.IDEConfigurations" />
+    <activity android:name=".activities.ActivityM3Icons" />
+
     <activity
       android:name=".activities.TerminalActivity"
       android:windowSoftInputMode="adjustResize" />
+
+    <activity
+      android:name=".activities.AssetStudioActivity"
+      android:exported="false"
+      android:theme="@style/Theme.AndroidIDE" />
+
+    <activity
+      android:name=".activities.MaterialIconsWebActivity"
+      android:exported="false"
+      android:theme="@style/Theme.AndroidIDE" />
+
+    <activity
+      android:name=".activities.FolderPickerActivity"
+      android:exported="false"
+      android:theme="@style/Theme.AndroidIDE" />
+
+    <activity
+      android:name=".activities.FileBrowserActivity"
+      android:exported="false"
+      android:theme="@style/Theme.AndroidIDE" />
+
+    <activity
+      android:name=".activities.NCrashHandlerActivity"
+      android:exported="false"
+      android:theme="@style/Theme.AndroidIDE" />
 
     <provider
       android:authorities="com.itsaky.androidide.documents"
@@ -99,6 +157,16 @@
         android:resource="@xml/ide_file_provider_paths" />
     </provider>
 
+    <provider
+      android:name="androidx.core.content.FileProvider"
+      android:authorities="${applicationId}.fileprovider"
+      android:exported="false"
+      android:grantUriPermissions="true">
+      <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+    </provider>
+
     <receiver
       android:enabled="true"
       android:exported="true"
@@ -114,6 +182,12 @@
       android:name=".services.builder.GradleBuildService" />
 
     <service
+      android:name="com.termux.app.TermuxService"
+      android:enabled="true"
+      android:exported="false"
+      android:stopWithTask="true" />
+
+    <service
       android:exported="true"
       android:name=".services.log.LogReceiverService"
       android:permission="com.itsaky.androidide.permission.BIND_LOG_SERVICE">
@@ -121,6 +195,7 @@
         <action android:name="com.itsaky.androidide.LOG_SERVICE_ACTION" />
       </intent-filter>
     </service>
+
     <service
       android:enabled="false"
       android:exported="false"
@@ -129,5 +204,9 @@
         android:name="autoStoreLocales"
         android:value="true" />
     </service>
+
+    <meta-data
+      android:name="android.app.themed_icon"
+      android:value="true" />
   </application>
 </manifest>
