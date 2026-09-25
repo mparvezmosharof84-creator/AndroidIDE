@@ -4,7 +4,7 @@
  */
 
 pluginManagement {
-  includeBuild("build-logic")
+  includeBuild("composite-builds/build-logic")
   repositories {
     gradlePluginPortal()
     google()
