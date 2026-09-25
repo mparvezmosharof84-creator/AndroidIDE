@@ -1,9 +1,10 @@
 /*
  *  This file is part of AndroidIDE.
- *  Complete Build Fix Edition by Parvez Mosharof
+ *  Complete Settings Fix Edition by Parvez Mosharof
  */
 
 pluginManagement {
+  includeBuild("build-logic")
   repositories {
     gradlePluginPortal()
     google()
@@ -23,6 +24,8 @@ dependencyResolutionManagement {
     maven("https://jitpack.io")
   }
 }
+
+includeBuild("composite-builds")
 
 rootProject.name = "AndroidIDE"
 
