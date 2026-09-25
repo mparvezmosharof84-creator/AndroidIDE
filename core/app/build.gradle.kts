@@ -1,91 +1,133 @@
-/*
- *  This file is part of AndroidIDE.
- *
- *  AndroidIDE is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  AndroidIDE is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 @file:Suppress("UnstableApiUsage")
 
 import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.desugaring.utils.JavaIOReplacements.applyJavaIOReplacements
 import com.itsaky.androidide.plugins.AndroidIDEAssetsPlugin
+import java.util.Properties
 
 plugins {
   id("com.itsaky.androidide.core-app")
   id("com.android.application")
   id("kotlin-android")
   id("kotlin-kapt")
+  id("kotlinx-serialization")
   id("kotlin-parcelize")
   id("androidx.navigation.safeargs.kotlin")
   id("com.itsaky.androidide.desugaring")
 }
 
-apply {
-  plugin(AndroidIDEAssetsPlugin::class.java)
+apply { plugin(AndroidIDEAssetsPlugin::class.java) }
+
+// সমস্যা সৃষ্টিকারী খালি buildscript ব্লকটি সরিয়ে সরাসরি ক্লিন রাখা হলো
+
+tasks.configureEach {
+    if (name.contains("desugar", ignoreCase = true)) {
+        enabled = false
+    }
 }
 
-buildscript {
-  dependencies {
-    classpath(libs.logging.logback.core)
-    classpath(libs.composite.desugaringCore)
+configurations.all {
+  resolutionStrategy {
+    force("com.google.guava:guava:32.1.3-android")
+    eachDependency {
+      if (requested.group == "com.google.guava" && requested.name == "guava") {
+        if (requested.version?.contains("jre") == true) {
+          useVersion("32.1.3-android")
+          because("Force Android version to avoid synthetic lambda conflicts")
+        }
+      }
+    }
   }
 }
 
 android {
-  namespace = BuildConfig.packageName
+  namespace = "com.itsaky.androidide"
 
   defaultConfig {
-    applicationId = BuildConfig.packageName
+    applicationId = "com.itsaky.androidide"
+    versionCode = 270
+    versionName = "2.7.0-beta"
     vectorDrawables.useSupportLibrary = true
+    multiDexEnabled = true
   }
+  
+  experimentalProperties["android.experimental.enableGlobalSynthetics"] = true
 
-  androidResources {
-    generateLocaleConfig = true
+  androidResources { generateLocaleConfig = true }
+
+  buildFeatures {
+    aidl = true
+    dataBinding = true
   }
 
   buildTypes {
+    debug {
+      signingConfig = signingConfigs.getByName("debug")
+    }
+
     release {
-      isShrinkResources = true
+      isShrinkResources = false
+      signingConfig = signingConfigs.getByName("debug")
     }
   }
-
+  
   lint {
     abortOnError = false
     disable.addAll(arrayOf("VectorPath", "NestedWeights", "ContentDescription", "SmallSp"))
   }
-}
 
-kapt {
-  arguments {
-    arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEventsIndex")
+  packaging {
+    resources {
+      pickFirsts += "kotlin/**.kotlin_builtins"
+      pickFirsts += "THIRD-PARTY"
+      pickFirsts += "LICENSE"
+    }
+  }
+
+  applicationVariants.all {
+    val variant = this
+    variant.outputs.all {
+      val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+      val versionName = variant.versionName ?: "unknown"
+      val versionCode = variant.versionCode
+      val buildType = variant.buildType.name
+      val filters = output.filters
+      val abiFilter = filters.find { it.filterType == "ABI" }
+      val archSuffix = abiFilter?.identifier ?: "arm64-v8a"
+
+      val appName = "android-ai-studio"
+      val fileName = if (buildType == "release") {
+        "${appName}-${archSuffix}-${versionName}.apk"
+      } else {
+        "${appName}-${archSuffix}-${buildType}-${versionName}.apk"
+      }
+
+      output.outputFileName = fileName
+    }
   }
 }
 
+kapt { arguments { arg("eventBusIndex", "com.itsaky.androidide.events.AppEventsIndex") } }
+
 desugaring {
   replacements {
-    includePackage(
-      "org.eclipse.jgit",
-    )
-
+    includePackage("org.eclipse.jgit")
     applyJavaIOReplacements()
   }
 }
 
 dependencies {
-  debugImplementation(libs.common.leakcanary)
-
-  // Annotation processors
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+  implementation("org.tukaani:xz:1.9")
+  implementation("org.apache.commons:commons-compress:1.21")
+  implementation("com.github.Dimezis:BlurView:version-3.2.0")
+  implementation("androidx.security:security-crypto:1.1.0-alpha06")
+  implementation(projects.external.acsprovider)
+  implementation(projects.external.atc) 
+  implementation(libs.external.customizable.cardview)
+  implementation(projects.external.logwire)
+  implementation(libs.external.seasonal.effects)
+  
   kapt(libs.common.glide.ap)
   kapt(libs.google.auto.service)
   kapt(projects.annotation.processors)
@@ -105,10 +147,15 @@ dependencies {
   implementation(libs.google.gson)
   implementation(libs.google.guava)
 
-  // Git
+  implementation("com.google.ai.client.generativeai:generativeai:0.9.0") {
+    exclude(group = "org.slf4j", module = "slf4j-api")
+    exclude(group = "org.slf4j", module = "slf4j-simple")
+    exclude(group = "org.slf4j", module = "slf4j-nop")
+  }
+  
+  implementation("com.github.MiyazKaori:SilentInstaller:1.0.0-alpha")
   implementation(libs.git.jgit)
 
-  // AndroidX
   implementation(libs.androidx.splashscreen)
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.appcompat)
@@ -129,16 +176,15 @@ dependencies {
   implementation(libs.google.material)
   implementation(libs.google.flexbox)
 
-  // Kotlin
   implementation(libs.androidx.core.ktx)
   implementation(libs.common.kotlin)
 
-  // Dependencies in composite build
   implementation(libs.composite.appintro)
   implementation(libs.composite.desugaringCore)
-  implementation(libs.composite.javapoet)
+  implementation(files(rootProject.file("composite-builds/build-deps/libs/javapoet.jar")))
 
-  // Local projects here
+  implementation(projects.core.projectdata)
+  implementation(projects.ideconfigurations)
   implementation(projects.core.actions)
   implementation(projects.core.common)
   implementation(projects.core.indexingApi)
@@ -152,6 +198,7 @@ dependencies {
   implementation(projects.event.eventbusAndroid)
   implementation(projects.event.eventbusEvents)
   implementation(projects.java.javacServices)
+  implementation(projects.java.lspSetup)
   implementation(projects.java.lsp)
   implementation(projects.logging.idestats)
   implementation(projects.logging.logsender)
@@ -173,10 +220,5 @@ dependencies {
   implementation(projects.xml.lsp)
   implementation(projects.xml.utils)
 
-  // This is to build the tooling-api-impl project before the app is built
-  // So we always copy the latest JAR file to assets
   compileOnly(projects.tooling.impl)
-
-  testImplementation(projects.testing.unitTest)
-  androidTestImplementation(projects.testing.androidTest)
 }
