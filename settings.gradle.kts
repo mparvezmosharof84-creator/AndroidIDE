@@ -63,6 +63,7 @@ include(
   ":termux:emulator",
   ":termux:shared",
   ":termux:view",
+  ":testing:gradle-tooling-test",
   ":testing:lspTest",
   ":testing:unitTest",
   ":tooling:api",
