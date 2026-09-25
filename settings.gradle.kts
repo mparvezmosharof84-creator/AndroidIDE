@@ -38,9 +38,18 @@ dependencyResolutionManagement {
   }
 }
 
-// এই দুটি কম্পোজিট বিল্ড থাকা আবশ্যক যাতে javac, javapoet, appintro ইত্যাদি সব পাওয়া যায়
-includeBuild("composite-builds/build-deps")
-includeBuild("composite-builds")
+includeBuild("composite-builds/build-deps") {
+  dependencySubstitution {
+    substitute(module("com.itsaky.androidide.build:appintro")).using(project(":appintro"))
+    substitute(module("com.itsaky.androidide.build:desugaring-core")).using(project(":desugaring-core"))
+    substitute(module("com.itsaky.androidide.build:google-java-format")).using(project(":google-java-format"))
+    substitute(module("com.itsaky.androidide.build:javac")).using(project(":javac"))
+    substitute(module("com.itsaky.androidide.build:javapoet")).using(project(":javapoet"))
+    substitute(module("com.itsaky.androidide.build:jaxp")).using(project(":jaxp"))
+    substitute(module("com.itsaky.androidide.build:layoutlib-api")).using(project(":layoutlib-api"))
+    substitute(module("com.itsaky.androidide.build:logback-core")).using(project(":logback-core"))
+  }
+}
 
 rootProject.name = "AndroidIDE"
 
