@@ -34,6 +34,10 @@ configurations.all {
           because("Force Android version to avoid synthetic lambda conflicts")
         }
       }
+      if (requested.group == "io.github.Rosemoe.sora-editor") {
+        useVersion("0.23.4")
+        because("Force official Maven Central release of sora-editor")
+      }
     }
   }
 }
@@ -171,21 +175,21 @@ dependencies {
   implementation(libs.composite.desugaringCore)
   implementation(files(rootProject.file("composite-builds/build-deps/libs/javapoet.jar")))
 
-  implementation(projects.core.projectdata)
   implementation(projects.core.actions)
   implementation(projects.core.common)
   implementation(projects.core.indexingApi)
   implementation(projects.core.indexingCore)
   implementation(projects.core.lspApi)
+  implementation(projects.core.lspModels)
   implementation(projects.core.projects)
   implementation(projects.core.resources)
   implementation(projects.editor.impl)
   implementation(projects.editor.lexers)
+  implementation(projects.editor.treesitter)
   implementation(projects.event.eventbus)
   implementation(projects.event.eventbusAndroid)
   implementation(projects.event.eventbusEvents)
   implementation(projects.java.javacServices)
-  implementation(projects.java.lspSetup)
   implementation(projects.java.lsp)
   implementation(projects.logging.idestats)
   implementation(projects.logging.logsender)
