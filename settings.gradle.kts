@@ -1,16 +1,20 @@
 /*
  *  This file is part of AndroidIDE.
- *  Clean Dependency & Repository Fix by Parvez Mosharof
+ *  Complete Settings Fix Edition by Parvez Mosharof
  */
 
+@file:Suppress("UnstableApiUsage")
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
-  includeBuild("composite-builds/build-logic")
+  includeBuild("composite-builds/build-logic") {
+    name = "build-logic"
+  }
   repositories {
     gradlePluginPortal()
     google()
     mavenCentral()
-    maven("https://jitpack.io")
-    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
   }
 }
 
@@ -51,9 +55,9 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
-    maven("https://jitpack.io")
-    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
+    maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
+    maven { url = uri("https://s01.oss.sonatype.org/content/groups/public/") }
+    maven { url = uri("https://jitpack.io") }
   }
 }
 
