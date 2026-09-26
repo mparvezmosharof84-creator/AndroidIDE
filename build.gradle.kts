@@ -5,6 +5,7 @@
 
 @file:Suppress("UnstableApiUsage")
 
+import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
 import com.itsaky.androidide.plugins.conf.configureAndroidModule
 import com.itsaky.androidide.plugins.conf.configureJavaModule
@@ -28,17 +29,23 @@ buildscript {
   }
 }
 
-// সেমভার এরর চিরতরে বন্ধ করার জন্য গ্লোবাল ভার্সন নির্ধারণ
-allprojects {
-  version = "v2.7.0-beta"
-}
+project.version = "v2.7.0-beta"
+project.group = BuildConfig.packageName
 
 subprojects {
+  if (project != rootProject) {
+    var group = project.parent!!.group
+    if (project.parent != rootProject) {
+      group = "${group}.${project.parent!!.name}"
+    }
+    project.group = group
+  }
+
   afterEvaluate {
     apply { plugin(AndroidIDEPlugin::class.java) }
   }
 
-  project.version = "v2.7.0-beta"
+  project.version = rootProject.version
 
   plugins.withId("com.android.application") {
     configureAndroidModule(libs.androidx.libDesugaring)
