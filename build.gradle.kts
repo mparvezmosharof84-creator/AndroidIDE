@@ -32,6 +32,20 @@ buildscript {
 project.version = "v2.7.0-beta"
 project.group = BuildConfig.packageName
 
+allprojects {
+  version = "v2.7.0-beta"
+
+  // Sora Editor-এর মিসিং স্ন্যাপশটের জায়গায় সরাসরি মাভেন সেন্ট্রালের আসল ০.২৩.৪ ভার্সন ফোর্স করা
+  configurations.all {
+    resolutionStrategy.eachDependency {
+      if (requested.group == "io.github.Rosemoe.sora-editor") {
+        useVersion("0.23.4")
+        because("Force official Maven Central release of sora-editor")
+      }
+    }
+  }
+}
+
 subprojects {
   if (project != rootProject) {
     var group = project.parent!!.group
