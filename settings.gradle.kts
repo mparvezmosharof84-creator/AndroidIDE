@@ -1,6 +1,6 @@
 /*
  *  This file is part of AndroidIDE.
- *  Official Composite Build Engine Fix by Parvez Mosharof
+ *  Official Composite Build & Sora Editor Fix by Parvez Mosharof
  */
 
 pluginManagement {
@@ -9,6 +9,7 @@ pluginManagement {
     gradlePluginPortal()
     google()
     mavenCentral()
+    maven("https://repo.rosemoe.com/repository/maven-public/")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://jitpack.io")
@@ -52,6 +53,7 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
+    maven("https://repo.rosemoe.com/repository/maven-public/")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://jitpack.io")
