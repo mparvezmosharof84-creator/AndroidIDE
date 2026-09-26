@@ -1,6 +1,6 @@
 /*
  *  This file is part of AndroidIDE.
- *  Complete Settings Fix Edition by Parvez Mosharof
+ *  Official Composite Build Engine Fix by Parvez Mosharof
  */
 
 @file:Suppress("UnstableApiUsage")
@@ -55,8 +55,6 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
-    maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
-    maven { url = uri("https://s01.oss.sonatype.org/content/groups/public/") }
     maven { url = uri("https://jitpack.io") }
   }
 }
@@ -74,7 +72,6 @@ include(
   ":core:indexing-core",
   ":core:lsp-api",
   ":core:lsp-models",
-  ":core:projectdata",
   ":core:projects",
   ":core:resources",
   ":editor:api",
@@ -89,7 +86,6 @@ include(
   ":external:logwire",
   ":java:javac-services",
   ":java:lsp",
-  ":java:lsp-setup",
   ":logging:idestats",
   ":logging:logger",
   ":logging:logsender",
